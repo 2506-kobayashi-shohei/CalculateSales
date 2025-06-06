@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CalculateSales {
@@ -37,6 +39,23 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
+		File[] files = new File("C:\\Users\\trainee1440\\Desktop\\売り上げ集計課題").listFiles();
+		List<File> rcdFiles = new ArrayList<>();
+		String regex = "^[0-9]{8}.+rcd$";
+		for (int i = 0; i < files.length; i++) {
+			if(files[i].getName().matches(regex)) {
+				rcdFiles.add(files[i]);
+			}
+		}
+
+		for(File file : rcdFiles) {
+			if(!readRcdFile(args[0],file.getName(),branchSales)){
+				return;
+			}
+		}
+		System.out.println(branchSales);
+		System.out.println(branchNames);
+
 
 
 
@@ -44,6 +63,7 @@ public class CalculateSales {
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
 			return;
 		}
+
 
 	}
 
@@ -68,8 +88,46 @@ public class CalculateSales {
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
+				String[] items = line.split(",");
+				branchNames.put(items[0], items[1]);
+				branchSales.put(items[0], 0L);
 				System.out.println(line);
 			}
+
+		} catch(IOException e) {
+			System.out.println(UNKNOWN_ERROR);
+			return false;
+		} finally {
+			// ファイルを開いている場合
+			if(br != null) {
+				try {
+					// ファイルを閉じる
+					br.close();
+				} catch(IOException e) {
+					System.out.println(UNKNOWN_ERROR);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+
+	private static boolean readRcdFile(String path, String fileName, Map<String, Long> branchSales) {
+		BufferedReader br = null;
+
+		try {
+			File file = new File(path, fileName);
+			FileReader fr = new FileReader(file);
+			br = new BufferedReader(fr);
+
+			String line;
+			Long rcd;
+			// 一行ずつ読み込む
+			line = br.readLine();
+			rcd = Long.parseLong(br.readLine());
+			branchSales.put(line, branchSales.get(line) + rcd);
+
 
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
@@ -100,6 +158,33 @@ public class CalculateSales {
 	 */
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
+//		List<String> salesData = new ArrayList<>();
+//		for(String key : branchNames.keySet()) {
+//			salesData.add(key + "," + branchNames.get(key) + "," + Long.toString(branchSales.get(key)));
+//		}
+//		BufferedWriter bw = null;
+//
+//		try {
+//			FileWriter fw = new FileWriter(file);
+//			bw = new BufferedWriter(fw);
+//
+//			for(String data : salesData) {
+//				bw.write(data);
+//				bw.newLine();
+//			}
+//		} catch(IOException e) {
+//			System.out.println("例外が発生しました。");
+//			System.out.println(e);
+//		} finally {
+//			if(bw != null) {
+//				try {
+//					bw.close();
+//				} catch (IOException e) {
+//					System.out.println("close処理中に例外が発生しました。");
+//					System.out.println(e);
+//				}
+//			}
+//		}
 
 		return true;
 	}
