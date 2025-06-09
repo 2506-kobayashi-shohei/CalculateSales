@@ -119,9 +119,9 @@ public class CalculateSales {
 			while((line = br.readLine()) != null) {
 				rcd.add(line);
 			}
-			String branchCord = rcd.get(0);
-			Long saleAmount = branchSales.get(branchCord) + Long.parseLong(rcd.get(1));
-			branchSales.put(branchCord, saleAmount);
+			String branchCode = rcd.get(0);
+			Long saleAmount = branchSales.get(branchCode) + Long.parseLong(rcd.get(1));
+			branchSales.put(branchCode, saleAmount);
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
@@ -165,7 +165,6 @@ public class CalculateSales {
 			}
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
-			System.out.println(e);
 			return false;
 		} finally {
 			if(bw != null) {
@@ -173,7 +172,6 @@ public class CalculateSales {
 					bw.close();
 				} catch (IOException e) {
 					System.out.println(UNKNOWN_ERROR);
-					System.out.println(e);
 					return false;
 				}
 			}
