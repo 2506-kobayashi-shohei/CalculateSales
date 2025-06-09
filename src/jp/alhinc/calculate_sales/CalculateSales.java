@@ -1,8 +1,10 @@
 package jp.alhinc.calculate_sales;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,8 +55,6 @@ public class CalculateSales {
 				return;
 			}
 		}
-		System.out.println(branchSales);
-		System.out.println(branchNames);
 
 
 
@@ -91,7 +91,6 @@ public class CalculateSales {
 				String[] items = line.split(",");
 				branchNames.put(items[0], items[1]);
 				branchSales.put(items[0], 0L);
-				System.out.println(line);
 			}
 
 		} catch(IOException e) {
@@ -122,11 +121,14 @@ public class CalculateSales {
 			br = new BufferedReader(fr);
 
 			String line;
-			Long rcd;
+			List<String> rcd = new ArrayList<>();
 			// 一行ずつ読み込む
-			line = br.readLine();
-			rcd = Long.parseLong(br.readLine());
-			branchSales.put(line, branchSales.get(line) + rcd);
+			while((line = br.readLine()) != null) {
+				rcd.add(line);
+			}
+			String id = rcd.get(0);
+			Long saleAmount = branchSales.get(id) + Long.parseLong(rcd.get(1));
+			branchSales.put(id,saleAmount);
 
 
 		} catch(IOException e) {
@@ -158,33 +160,36 @@ public class CalculateSales {
 	 */
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
-//		List<String> salesData = new ArrayList<>();
-//		for(String key : branchNames.keySet()) {
-//			salesData.add(key + "," + branchNames.get(key) + "," + Long.toString(branchSales.get(key)));
-//		}
-//		BufferedWriter bw = null;
-//
-//		try {
-//			FileWriter fw = new FileWriter(file);
-//			bw = new BufferedWriter(fw);
-//
-//			for(String data : salesData) {
-//				bw.write(data);
-//				bw.newLine();
-//			}
-//		} catch(IOException e) {
-//			System.out.println("例外が発生しました。");
-//			System.out.println(e);
-//		} finally {
-//			if(bw != null) {
-//				try {
-//					bw.close();
-//				} catch (IOException e) {
-//					System.out.println("close処理中に例外が発生しました。");
-//					System.out.println(e);
-//				}
-//			}
-//		}
+		File file = new File(path, fileName);
+
+		List<String> salesData = new ArrayList<>();
+		for(String key : branchNames.keySet()) {
+			salesData.add(key + "," + branchNames.get(key) + "," + Long.toString(branchSales.get(key)));
+		}
+
+		BufferedWriter bw = null;
+
+		try {
+			FileWriter fw = new FileWriter(file);
+			bw = new BufferedWriter(fw);
+
+			for(String data : salesData) {
+				bw.write(data);
+				bw.newLine();
+			}
+		} catch(IOException e) {
+			System.out.println("例外が発生しました。");
+			System.out.println(e);
+		} finally {
+			if(bw != null) {
+				try {
+					bw.close();
+				} catch (IOException e) {
+					System.out.println("close処理中に例外が発生しました。");
+					System.out.println(e);
+				}
+			}
+		}
 
 		return true;
 	}
