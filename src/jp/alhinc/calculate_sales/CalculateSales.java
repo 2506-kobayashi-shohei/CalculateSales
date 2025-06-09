@@ -41,7 +41,7 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		File[] files = new File("C:\\Users\\trainee1440\\Desktop\\売り上げ集計課題").listFiles();
+		File[] files = new File(args[0]).listFiles();
 		List<File> rcdFiles = new ArrayList<>();
 		String regex = "^[0-9]{8}.+rcd$";
 		for (int i = 0; i < files.length; i++) {
@@ -49,22 +49,16 @@ public class CalculateSales {
 				rcdFiles.add(files[i]);
 			}
 		}
-
 		for(File file : rcdFiles) {
-			if(!readRcdFile(args[0],file.getName(),branchSales)){
+			if(!readRcdFile(args[0], file.getName(), branchSales)){
 				return;
 			}
 		}
-
-
-
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
 			return;
 		}
-
-
 	}
 
 	/**
@@ -111,7 +105,6 @@ public class CalculateSales {
 		return true;
 	}
 
-
 	private static boolean readRcdFile(String path, String fileName, Map<String, Long> branchSales) {
 		BufferedReader br = null;
 
@@ -126,11 +119,9 @@ public class CalculateSales {
 			while((line = br.readLine()) != null) {
 				rcd.add(line);
 			}
-			String id = rcd.get(0);
-			Long saleAmount = branchSales.get(id) + Long.parseLong(rcd.get(1));
-			branchSales.put(id,saleAmount);
-
-
+			String branchCord = rcd.get(0);
+			Long saleAmount = branchSales.get(branchCord) + Long.parseLong(rcd.get(1));
+			branchSales.put(branchCord, saleAmount);
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
@@ -161,37 +152,32 @@ public class CalculateSales {
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
 		File file = new File(path, fileName);
-
-		List<String> salesData = new ArrayList<>();
-		for(String key : branchNames.keySet()) {
-			salesData.add(key + "," + branchNames.get(key) + "," + Long.toString(branchSales.get(key)));
-		}
-
 		BufferedWriter bw = null;
-
 		try {
+			String resultByBranch;
 			FileWriter fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
 
-			for(String data : salesData) {
-				bw.write(data);
+			for(String key : branchNames.keySet()) {
+				resultByBranch = key + "," + branchNames.get(key) + "," + Long.toString(branchSales.get(key));
+				bw.write(resultByBranch);
 				bw.newLine();
 			}
 		} catch(IOException e) {
-			System.out.println("例外が発生しました。");
+			System.out.println(UNKNOWN_ERROR);
 			System.out.println(e);
+			return false;
 		} finally {
 			if(bw != null) {
 				try {
 					bw.close();
 				} catch (IOException e) {
-					System.out.println("close処理中に例外が発生しました。");
+					System.out.println(UNKNOWN_ERROR);
 					System.out.println(e);
+					return false;
 				}
 			}
 		}
-
 		return true;
 	}
-
 }
