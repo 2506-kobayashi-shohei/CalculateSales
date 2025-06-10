@@ -134,7 +134,7 @@ public class CalculateSales {
 			String line;
 			List<String> rcd = new ArrayList<>();
 			// 一行ずつ読み込む
-			while((line = br.readLine()) != null) {
+			while ((line = br.readLine()) != null) {
 				rcd.add(line);
 			}
 			if (rcd.size() != 2) {
@@ -147,7 +147,7 @@ public class CalculateSales {
 				System.out.println(fileName + BRANCH_CODE_INVALID);
 				return false;
 			}
-			if (!branchRcd.matches("^[0-9]*$")) {
+			if (!branchRcd.matches("^[0-9]+$")) {
 				System.out.println(UNKNOWN_ERROR);
 				return false;
 			}
