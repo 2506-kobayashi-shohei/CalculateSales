@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +56,13 @@ public class CalculateSales {
 				rcdFiles.add(files[i]);
 			}
 		}
+		Collections.sort(rcdFiles);
 		for (int i = 0; i < rcdFiles.size() -1; i++) {
 			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
 			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
 			if ((latter - former) != 1) {
 				System.out.println(FILE_NAME_NOT_SEQUENTIAL);
+				return;
 			}
 		}
 		for(File file : rcdFiles) {
@@ -97,7 +100,7 @@ public class CalculateSales {
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
-				if (items.length != 2 || !items[0].matches("[0-9]{3}")) {
+				if (items.length != 2 || !items[0].matches("^[0-9]{3}$")) {
 					System.out.println(FILE_INVALID_FORMAT);
 					return false;
 				}
@@ -136,6 +139,7 @@ public class CalculateSales {
 			}
 			if (rcd.size() != 2) {
 				System.out.println(fileName + SALES_FILE_INVALID_FORMAT);
+				return false;
 			}
 			String branchCode = rcd.get(0);
 			String branchRcd = rcd.get(1);
@@ -150,6 +154,7 @@ public class CalculateSales {
 			Long saleAmount = branchSales.get(branchCode) + Long.parseLong(branchRcd);
 			if (saleAmount >= 10000000000L) {
 				System.out.println(SALES_AMOUNT_EXCEEDED_10FIGURES);
+				return false;
 			}
 			branchSales.put(branchCode, saleAmount);
 		} catch(IOException e) {
