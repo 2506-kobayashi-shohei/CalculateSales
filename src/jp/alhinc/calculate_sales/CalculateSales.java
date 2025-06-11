@@ -104,12 +104,12 @@ public class CalculateSales {
 	 * @return 読み込み可否
 	 */
 	private static boolean readFile(String path, String fileName, Map<String, String> names,
-			Map<String, Long> sales, String regex, String fileNameForErrorMessage) {
+			Map<String, Long> sales, String regex, String fileType) {
 		BufferedReader br = null;
 		try {
 			File file = new File(path, fileName);
 			if (!file.exists()) {
-				System.out.println(fileNameForErrorMessage + FILE_NOT_EXIST);
+				System.out.println(fileType + FILE_NOT_EXIST);
 				return false;
 			}
 			FileReader fr = new FileReader(file);
@@ -120,7 +120,7 @@ public class CalculateSales {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
 				if (items.length != 2 || !items[0].matches(regex)) {
-					System.out.println(fileNameForErrorMessage + FILE_INVALID_FORMAT);
+					System.out.println(fileType + FILE_INVALID_FORMAT);
 					return false;
 				}
 				names.put(items[0], items[1]);
@@ -162,28 +162,29 @@ public class CalculateSales {
 				return false;
 			}
 			String branchCode = rcd.get(0);
-			String commodityName = rcd.get(1);
-			String saleAmount = rcd.get(2);
+			String commodityCode = rcd.get(1);
+			String sales = rcd.get(2);
 			if (!branchSales.containsKey(branchCode)) {
 				System.out.println(fileName + BRANCH_CODE_INVALID);
 				return false;
 			}
-			if (!commoditySales.containsKey(commodityName)) {
+			if (!commoditySales.containsKey(commodityCode)) {
 				System.out.println(fileName + BRANCH_CODE_INVALID);
 				return false;
 			}
-			if (!saleAmount.matches("^[0-9]+$")) {
+			if (!sales.matches("^[0-9]+$")) {
 				System.out.println(UNKNOWN_ERROR);
 				return false;
 			}
-			Long branchSaleAmount = branchSales.get(branchCode) + Long.parseLong(saleAmount);
-			Long commoditySaleAmount = commoditySales.get(commodityName) + Long.parseLong(saleAmount);
+			Long longSales = Long.parseLong(sales);
+			Long branchSaleAmount = branchSales.get(branchCode) + longSales;
+			Long commoditySaleAmount = commoditySales.get(commodityCode) + longSales;
 			if (branchSaleAmount >= 10000000000L || commoditySaleAmount >= 10000000000L) {
 				System.out.println(SALES_AMOUNT_EXCEEDED_10FIGURES);
 				return false;
 			}
 			branchSales.put(branchCode, branchSaleAmount);
-			commoditySales.put(commodityName, commoditySaleAmount);
+			commoditySales.put(commodityCode, commoditySaleAmount);
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
