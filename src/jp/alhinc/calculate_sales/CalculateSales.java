@@ -50,12 +50,14 @@ public class CalculateSales {
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
 		Map<String, Long> branchSales = new HashMap<>();
+		// 商品コードと商品名を保持するMap
+		Map<String, String> commodityNames = new HashMap<>();
+		// 商品コードと商品別売上を保持するMap
+		Map<String, Long> commoditySales = new HashMap<>();
 		// 支店定義ファイル読み込み処理
 		if (!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales, "^[0-9]{3}$", BRANCH_FILE)) {
 			return;
 		}
-		Map<String, String> commodityNames = new HashMap<>();
-		Map<String, Long> commoditySales = new HashMap<>();
 		if (!readFile(args[0], FILE_NAME_COMMODITY_LST, commodityNames, commoditySales,
 				"^[A-Za-z0-9]{8}$", COMMODITY_FILE)) {
 			return;
@@ -102,12 +104,12 @@ public class CalculateSales {
 	 * @return 読み込み可否
 	 */
 	private static boolean readFile(String path, String fileName, Map<String, String> names,
-			Map<String, Long> sales, String regex, String errorMessage) {
+			Map<String, Long> sales, String regex, String fileNameForErrorMessage) {
 		BufferedReader br = null;
 		try {
 			File file = new File(path, fileName);
 			if (!file.exists()) {
-				System.out.println(errorMessage + FILE_NOT_EXIST);
+				System.out.println(fileNameForErrorMessage + FILE_NOT_EXIST);
 				return false;
 			}
 			FileReader fr = new FileReader(file);
@@ -118,7 +120,7 @@ public class CalculateSales {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
 				if (items.length != 2 || !items[0].matches(regex)) {
-					System.out.println(errorMessage + FILE_INVALID_FORMAT);
+					System.out.println(fileNameForErrorMessage + FILE_INVALID_FORMAT);
 					return false;
 				}
 				names.put(items[0], items[1]);
